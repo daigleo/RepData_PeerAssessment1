@@ -1,13 +1,9 @@
----
-title: "Reproducible Research: Peer Assessment 1"
-output: 
-  html_document:
-    keep_md: true
----
+# Reproducible Research: Peer Assessment 1
 
 
 ## Loading and preprocessing the data
-```{r load data,echo=TRUE, warning=FALSE}
+
+```r
         ## load required libraries (these give warning that can be ignored)
         library(ggplot2);library(scales)
         ## Read and process data
@@ -17,7 +13,8 @@ output:
 ```
 ## What is mean total number of steps taken per day?
 The total number of steps per day is shown in the figure below.
-```{r, echo=TRUE}
+
+```r
         dailyTotal <- aggregate(steps ~ date, activity, sum)
                               
         ggplot(dailyTotal, aes(x=date, y=steps)) +
@@ -28,47 +25,60 @@ The total number of steps per day is shown in the figure below.
                 labs(y= "Total steps")
 ```
 
+![](PA1_template_files/figure-html/unnamed-chunk-1-1.png) 
+
 The distribution of daily total steps taken over the two month period is shown
 in the following histogram.
-```{r, echo=TRUE}
+
+```r
         ggplot(dailyTotal, aes(steps)) + 
                 geom_histogram(binwidth=1000, colour="white") +
                 scale_x_continuous(labels = comma) +
                 labs(title= "Histogram of daily total steps") +
                 labs(y= "Frequency")
 ```
-```{r, echo=TRUE}
+
+![](PA1_template_files/figure-html/unnamed-chunk-2-1.png) 
+
+```r
         meanSteps <- round(mean(dailyTotal$steps), digits=1)
         medianSteps <- median(dailyTotal$steps)
 ```
 The mean and median steps over the two-month period are 
-`r sprintf("%.1f and %.1f", meanSteps, medianSteps)`.
+10766.2 and 10765.0.
 
 ## What is the average daily activity pattern?
-```{r, echo=TRUE}
+
+```r
         dailyActivityPattern <- aggregate(steps ~ interval, data, mean)
         ggplot(dailyActivityPattern, aes(y= steps, x= interval)) +
                 geom_line() +
                 scale_x_continuous(labels= comma) +
                 labs(y= "Mean step count") +
                 labs(title= "Mean daily step count per interval")
+```
 
+![](PA1_template_files/figure-html/unnamed-chunk-4-1.png) 
+
+```r
         maxActivity <- max(dailyActivityPattern$steps)
         maxTimeInt <- which(dailyActivityPattern$steps == maxActivity)
         maxTimeInt <- dailyActivityPattern$interval[maxTimeInt]
 ```
 
-The maximum mean interval step count is `r sprintf("%.1f", maxActivity)` steps and occurs in the 
-`r maxTimeInt`th five-minute interval.
+The maximum mean interval step count is 206.2 steps and occurs in the 
+835th five-minute interval.
 
 ## Inputing missing values
 
-```{r, echo=TRUE}
+
+```r
         naCount <- sum(is.na(data$steps))
 ```
-There is a total of `r naCount` missing values. These missing values can be 
+There is a total of 2304 missing values. These missing values can be 
 replaced by the mean interval step count for that time interval.
-```{r, echo=TRUE}
+
+```r
         missing <- which(is.na(data$steps))
         corrData <- data
         for (i in missing){
@@ -83,19 +93,25 @@ replaced by the mean interval step count for that time interval.
                 scale_x_continuous(labels = comma) +
                 labs(title= "Histogram of corrected daily total steps") +
                 labs(y= "Frequency")
+```
+
+![](PA1_template_files/figure-html/unnamed-chunk-6-1.png) 
+
+```r
         corrMeanSteps <- mean(corrDailyTotal$steps)
         corrMedianSteps <- median(corrDailyTotal$steps)
         errMeanSteps <- 100*(corrMeanSteps - meanSteps)/meanSteps
         errMedianSteps <- 100*(corrMedianSteps - medianSteps)/medianSteps
 ```
 The corrected mean and median are 
-`r sprintf("%.1f and %.1f", corrMeanSteps, corrMedianSteps)`.
+10766.2 and 10766.2.
 The corrected mean and median percent difference are
-`r sprintf("%.5f %% and %.5f %%", errMeanSteps, errMedianSteps)`.
+-0.00011 % and 0.01104 %.
 
 ## Are there differences in activity patterns between weekdays and weekends?
 The following plot shows mean interval number of steps for weekdays and weekend.
-```{r, echo=TRUE}
+
+```r
         corrData$date <- as.Date(corrData$date)
         corrData$day <- weekdays(corrData$date)
         weekend <- c("Saturday", "Sunday")
@@ -108,5 +124,6 @@ The following plot shows mean interval number of steps for weekdays and weekend.
                 labs(y= "Mean number of steps") +
                 labs(title= "Average number of step per interval by weekday and weekend") +
                 scale_x_continuous(labels= comma)
-        
 ```
+
+![](PA1_template_files/figure-html/unnamed-chunk-7-1.png) 
