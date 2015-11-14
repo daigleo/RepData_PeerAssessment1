@@ -7,7 +7,7 @@
         ## load required libraries (these give warning that can be ignored)
         library(ggplot2);library(scales)
         ## Read and process data
-        data <- read.csv("../activity.csv")
+        data <- read.csv("./activity.csv")
         activity <- data.frame(steps = data$steps, date = as.Date(data$date))
         activity <- activity[which(!is.na(activity$steps)),]
 ```
